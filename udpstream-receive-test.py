@@ -9,9 +9,10 @@ BUFF_SIZE = 65536
 client_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) # SOCK_DGRAM is the socket type to use for UDP sockets
 client_socket.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,BUFF_SIZE)
 host_name = socket.gethostname()
+
 host_ip = socket.gethostbyname(host_name) # get host server ip 
 print(host_ip)
-port = 53
+port = 9999
 message = b'Hello'
 
 client_socket.sendto(message,(host_ip,port))

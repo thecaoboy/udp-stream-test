@@ -1,14 +1,29 @@
 import socket
 import os
 import subprocess
-import ffmpeg
-
+import platform
+# import ffmpeg
 #FPS: "-r 30"
 
-list_files = subprocess.run(["ffmpeg", "-f", "v4l2", "-i", "/dev/video0", "-f", "alsa", "-i", "hw:1", "-profile:v", "high", 
-                            "-pix_fmt", "yuvj420p", "-level:v", "4.1", "-preset", "ultrafast", "-tune", "zerolatency", "-vcodec", 
-                            "libx264", "-r", "30", "-b:v", "512k", "-s", "1920x1080", "-acodec", "aac", "-strict", "-2", "-ac",
-                            "2", "-ab", "32k", "-ar", "44100", "-f", "mpegts", "-flush_packets", "0", "udp://162.250.138.11:9001"], 
-                            stdout=subprocess.DEVNULL)
+OS = platform.system()
 
+videodrivers = ""
+audiodrivers = ""
+ip = ""
+if OS == "Linux":
+    videodrivers = "v4l2"
+    audiodrivers = "alsa"
+    ip = "udp://162.250.138.11:9001"    
+# subprocess.run(["arecord", "-l", "-D", "hw:1,0"])
+#Linux
 
+list_files = subprocess.run(["ffmpeg", "-f", videodrivers, "-i", "/dev/video0", "-f", audiodrivers, "-i", "hw:1", "-profile:v", "high", 
+                            "-pix_fmt", "yuvj420p", "-level:v", "4.1", "-preset", "medium", "-tune", "zerolatency", "-vcodec", 
+                            "libx264", "-r", "60", "-b:v", "8M", "-s", "1280x720", "-acodec", "aac", "-strict", "experimental", "-ac",
+                            "2", "-ab", "64k", "-ar", "44100", "-f", "mpegts", "-flush_packets", "0", ip,
+                            "-loglevel", "quiet"])
+                            # stdout=subprocess.DEVNULL)
+
+#"-loglevel error" is used to suppress debug logs (speed?)
+#maybe increase buffer size                            "-fflags", "nobuffer"
+ 
